@@ -7,7 +7,10 @@ import SourcingInfographic from "@/components/SourcingInfographic";
 import { ShieldCheck, Clock, Globe2, ArrowRight, Cpu } from "lucide-react";
 
 const InteractiveHero3D = dynamic(
-  () => import("@/components/InteractiveHero3D").catch(() => () => <div className="w-full h-full bg-slate-900/30" />),
+  () =>
+    Promise.resolve(() => (
+      <div className="w-full h-full bg-slate-900/30" />
+    )),
   { ssr: false }
 );
 
