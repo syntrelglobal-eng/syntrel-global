@@ -1,0 +1,2 @@
+:HL["/_next/static/chunks/0-59opq5qusp1.css","style"]
+0:{"tree":{"name":"","param":null,"prefetchHints":4176,"slots":{"children":{"name":"solutions","param":null,"prefetchHints":4192,"slots":{"children":{"name":"material","param":{"type":"d","key":"titanium","siblings":[]},"prefetchHints":4192,"slots":{"children":{"name":"component","param":{"type":"d","key":"pump-impeller","siblings":[]},"prefetchHints":4192,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":4256,"slots":null}}}}}}}}},"staleTime":300,"buildId":"__VkVVQ7T2SlctCpzAL33"}
