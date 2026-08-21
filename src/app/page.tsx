@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Canvas, useFrame } from "@react-three/fiber";
@@ -10,6 +10,7 @@ import {
   Zap, Layers, AlertTriangle, ChevronDown, Gauge,
   Activity, ThermometerSnowflake, Droplet
 } from "lucide-react";
+import SourcingInfographic from "@/components/SourcingInfographic";
 
 // OPTIMIZATION: Reduced polygon geometry (from 32 down to 16/24 segments) for massive mobile performance gains.
 function CADCouplerModel() {
@@ -78,7 +79,7 @@ export default function Home() {
               <CADCouplerModel />
             </Float>
             {/* OPTIMIZATION: enableZoom={false} prevents mobile users from accidentally zooming the canvas while scrolling */}
-            <OrbitControls autoRotate speed={0.4} enableZoom={false} enablePan={false} />
+            <OrbitControls autoRotate autoRotateSpeed={0.4} enableZoom={false} enablePan={false} />
           </Canvas>
         </div>
 
@@ -174,7 +175,7 @@ export default function Home() {
             <div className="border border-white/10 bg-white/[0.02] p-4 md:p-6">
               <Cpu className="w-6 h-6 md:w-8 md:h-8 text-cyan-400 mb-3 md:mb-4" />
               <h4 className="text-[10px] md:text-sm font-semibold text-slate-400 uppercase tracking-wider">Radial Drift</h4>
-              <div className="text-lg md:text-2xl font-bold text-white mt-1">±0.8 mm</div>
+              <div className="text-lg md:text-2xl font-bold text-white mt-1">Â±0.8 mm</div>
             </div>
           </div>
         </div>

@@ -1,7 +1,14 @@
-/** @type {import('next').NextConfig} */
+﻿/** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
-  typescript: { ignoreBuildErrors: true },
-  images: { unoptimized: true }
+  compress: true,
+  reactStrictMode: true,
+  output: "standalone",
+  images: {
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 604800,
+  },
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
+  },
 };
 export default nextConfig;
