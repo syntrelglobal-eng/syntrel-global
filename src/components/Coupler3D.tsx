@@ -2,65 +2,87 @@
 
 import React, { useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Environment, Float, ContactShadows, PresentationControls } from "@react-three/drei";
+import { Float, PresentationControls } from "@react-three/drei";
 import * as THREE from "three";
 
-function StainlessSteelCoupler() {
+function RealisticCoupler() {
   const groupRef = useRef<THREE.Group>(null);
 
   useFrame((state, delta) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y += delta * 0.25;
-      groupRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.4) * 0.04;
+      groupRef.current.rotation.y += delta * 0.15; // Smooth, premium spin
+      groupRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.5) * 0.05;
     }
   });
 
-  const steelMat = new THREE.MeshStandardMaterial({
-    color: "#c8d1d9",
+  // Pure mathematical materials (Zero download time)
+  const polishedSteel = new THREE.MeshStandardMaterial({
+    color: "#e2e8f0",
     metalness: 0.95,
-    roughness: 0.12,
-    envMapIntensity: 1.8,
+    roughness: 0.15,
   });
 
-  const darkGasketMat = new THREE.MeshStandardMaterial({
+  const darkAnodized = new THREE.MeshStandardMaterial({
     color: "#0f172a",
     metalness: 0.8,
-    roughness: 0.35,
+    roughness: 0.4,
+  });
+
+  const brassValve = new THREE.MeshStandardMaterial({
+    color: "#fbbf24",
+    metalness: 0.9,
+    roughness: 0.2,
   });
 
   return (
-    <group ref={groupRef} scale={1.35} rotation={[0.35, 0, 0]}>
-      {/* Precision Machined Barrel */}
-      <mesh position={[0, 0, 0]} material={steelMat}>
-        <cylinderGeometry args={[0.82, 0.82, 2.6, 64]} />
+    <group ref={groupRef} scale={1.2} rotation={[0.4, -0.5, 0]}>
+      {/* 1. Hex Nut Base (For Wrenching) */}
+      <mesh position={[0, -1.2, 0]} material={polishedSteel}>
+        <cylinderGeometry args={[0.9, 0.9, 0.6, 6]} />
+      </mesh>
+      
+      {/* 2. Threaded Base Placeholder */}
+      <mesh position={[0, -1.7, 0]} material={darkAnodized}>
+        <cylinderGeometry args={[0.6, 0.6, 0.5, 32]} />
       </mesh>
 
-      {/* Hexagonal Grip Nut */}
-      <mesh position={[0, -0.45, 0]} material={steelMat}>
-        <cylinderGeometry args={[1.08, 1.08, 0.65, 6]} />
+      {/* 3. Main Outer Body */}
+      <mesh position={[0, -0.4, 0]} material={polishedSteel}>
+        <cylinderGeometry args={[0.75, 0.75, 1.0, 64]} />
       </mesh>
 
-      {/* Quick-Disconnect Locking Collar */}
-      <mesh position={[0, 0.85, 0]} material={steelMat}>
-        <cylinderGeometry args={[0.98, 0.98, 0.75, 64]} />
+      {/* 4. Locking Sleeve / Collar */}
+      <mesh position={[0, 0.5, 0]} material={polishedSteel}>
+        <cylinderGeometry args={[0.95, 0.95, 1.2, 32]} />
+      </mesh>
+      
+      {/* 5. Knurled Grooves on Sleeve */}
+      <mesh position={[0, 0.2, 0]} material={darkAnodized}>
+        <torusGeometry args={[0.95, 0.03, 16, 64]} />
+      </mesh>
+      <mesh position={[0, 0.5, 0]} material={darkAnodized}>
+        <torusGeometry args={[0.95, 0.03, 16, 64]} />
+      </mesh>
+      <mesh position={[0, 0.8, 0]} material={darkAnodized}>
+        <torusGeometry args={[0.95, 0.03, 16, 64]} />
       </mesh>
 
-      {/* Internal Valve Core */}
-      <mesh position={[0, 1.35, 0]} material={darkGasketMat}>
-        <cylinderGeometry args={[0.62, 0.62, 0.35, 64]} />
+      {/* 6. Male Insert / Nozzle */}
+      <mesh position={[0, 1.4, 0]} material={polishedSteel}>
+        <cylinderGeometry args={[0.55, 0.55, 0.8, 64]} />
       </mesh>
 
-      {/* Threaded Fluid Base */}
-      <mesh position={[0, -1.45, 0]} material={steelMat}>
-        <cylinderGeometry args={[0.52, 0.52, 0.65, 32]} />
+      {/* 7. Dual Viton O-Rings */}
+      <mesh position={[0, 1.5, 0]} material={darkAnodized}>
+        <torusGeometry args={[0.56, 0.06, 16, 64]} />
+      </mesh>
+      <mesh position={[0, 1.7, 0]} material={darkAnodized}>
+        <torusGeometry args={[0.56, 0.06, 16, 64]} />
       </mesh>
 
-      {/* High-Pressure O-Ring Seals */}
-      <mesh position={[0, 0.35, 0]} material={darkGasketMat}>
-        <torusGeometry args={[0.83, 0.045, 16, 64]} />
-      </mesh>
-      <mesh position={[0, 1.15, 0]} material={darkGasketMat}>
-        <torusGeometry args={[0.99, 0.04, 16, 64]} />
+      {/* 8. Internal Exposed Valve Pin */}
+      <mesh position={[0, 1.8, 0]} material={brassValve}>
+        <cylinderGeometry args={[0.15, 0.15, 0.2, 32]} />
       </mesh>
     </group>
   );
@@ -68,30 +90,22 @@ function StainlessSteelCoupler() {
 
 export default function Coupler3D() {
   return (
-    <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center opacity-70 mix-blend-lighten overflow-hidden">
-      <div className="w-full h-[900px]">
-        <Canvas 
-          camera={{ position: [0, 0, 5.8], fov: 45 }} 
-          dpr={[1, 1.5]}
-          gl={{ powerPreference: "high-performance", antialias: true }}
-        >
-          <ambientLight intensity={0.6} />
-          <spotLight position={[8, 12, 8]} angle={0.25} penumbra={1} intensity={2.5} />
-          <directionalLight position={[-8, -5, -5]} intensity={0.9} color="#38bdf8" />
+    <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center opacity-85 mix-blend-lighten overflow-hidden">
+      <div className="w-full h-[600px] sm:h-[800px]">
+        {/* dpr throttled for speed, antialiasing optimized */}
+        <Canvas camera={{ position: [0, 0, 6], fov: 40 }} dpr={[1, 1.5]} gl={{ powerPreference: "high-performance" }}>
           
-          <PresentationControls 
-            global 
-            rotation={[0, 0.3, 0]} 
-            polar={[-Math.PI / 4, Math.PI / 4]} 
-            azimuth={[-Math.PI / 2, Math.PI / 2]}
-          >
-            <Float speed={1.8} rotationIntensity={0.15} floatIntensity={0.4}>
-              <StainlessSteelCoupler />
+          {/* NATIVE LIGHTING: 0 network requests, loads instantly */}
+          <ambientLight intensity={1.5} />
+          <spotLight position={[5, 10, 5]} angle={0.3} penumbra={1} intensity={500} color="#ffffff" />
+          <spotLight position={[-5, 5, -5]} angle={0.3} penumbra={1} intensity={300} color="#22d3ee" />
+          <pointLight position={[0, -5, 5]} intensity={200} color="#0ea5e9" />
+
+          <PresentationControls global rotation={[0, 0, 0]} polar={[-Math.PI/4, Math.PI/4]} azimuth={[-Math.PI/2, Math.PI/2]}>
+            <Float speed={2} rotationIntensity={0.2} floatIntensity={0.4}>
+              <RealisticCoupler />
             </Float>
           </PresentationControls>
-
-          <Environment preset="studio" />
-          <ContactShadows position={[0, -2.4, 0]} opacity={0.6} scale={9} blur={2.2} far={3.5} color="#06b6d4" />
         </Canvas>
       </div>
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050811]/60 to-[#050811]" />
