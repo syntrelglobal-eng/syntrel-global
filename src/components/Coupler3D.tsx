@@ -62,11 +62,9 @@ export default function Coupler3D() {
           <ambientLight intensity={0.5} />
           <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={2} castShadow />
           
-          {/* FIXED: snap is now strictly a boolean to satisfy TypeScript */}
+          {/* FIXED: Removed the deprecated 'config' and 'snap' props causing the TS error */}
           <PresentationControls 
             global 
-            config={{ mass: 2, tension: 500 }} 
-            snap={true} 
             rotation={[0, 0.3, 0]} 
             polar={[-Math.PI / 3, Math.PI / 3]} 
             azimuth={[-Math.PI / 1.4, Math.PI / 2]}

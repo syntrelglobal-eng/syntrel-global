@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShieldCheck, Clock, Globe2, ArrowRight, Timer, Cpu, Activity, Minimize2 } from "lucide-react";
+import { ShieldCheck, Clock, Globe2, ArrowRight, Timer, Cpu, Activity, Minimize2, type LucideIcon } from "lucide-react";
 
 // Dynamically import the photorealistic 3D Coupler
 const Coupler3D = dynamic(() => import("@/components/Coupler3D"), { ssr: false });
@@ -42,7 +42,7 @@ function UrgencyTimer() {
 
 // FIXED: TypeScript Interface for the Interactive Data Card Props
 interface InteractiveDataCardProps {
-  icon: React.ElementType;
+  icon: LucideIcon;
   title: string;
   metric: string;
   hiddenData: React.ReactNode;
