@@ -9,12 +9,11 @@ function StainlessSteelCoupler() {
 
   useFrame((state, delta) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y += delta * 0.2; // Slow, premium rotation
+      groupRef.current.rotation.y += delta * 0.2; 
       groupRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.5) * 0.05;
     }
   });
 
-  // High-end stainless steel material properties
   const steelMaterial = new THREE.MeshStandardMaterial({
     color: "#b0b5b9",
     metalness: 1.0,
@@ -30,32 +29,21 @@ function StainlessSteelCoupler() {
 
   return (
     <group ref={groupRef} scale={1.4} rotation={[0.4, 0, 0]}>
-      {/* Main Body (Barrel) */}
       <mesh position={[0, 0, 0]} material={steelMaterial}>
         <cylinderGeometry args={[0.8, 0.8, 2.5, 64]} />
       </mesh>
-
-      {/* Hexagonal Grip Nut */}
       <mesh position={[0, -0.5, 0]} material={steelMaterial}>
         <cylinderGeometry args={[1.05, 1.05, 0.6, 6]} />
       </mesh>
-
-      {/* Quick-Disconnect Locking Collar */}
       <mesh position={[0, 0.8, 0]} material={steelMaterial}>
         <cylinderGeometry args={[0.95, 0.95, 0.8, 64]} />
       </mesh>
-
-      {/* Inner Valve Mechanism */}
       <mesh position={[0, 1.3, 0]} material={darkMetal}>
         <cylinderGeometry args={[0.6, 0.6, 0.4, 64]} />
       </mesh>
-
-      {/* Threaded Base Connector */}
       <mesh position={[0, -1.4, 0]} material={steelMaterial}>
         <cylinderGeometry args={[0.5, 0.5, 0.6, 32]} />
       </mesh>
-
-      {/* Grooves / O-Ring channels for realism */}
       <mesh position={[0, 0.4, 0]} material={darkMetal}>
         <torusGeometry args={[0.81, 0.05, 16, 64]} />
       </mesh>
@@ -74,10 +62,11 @@ export default function Coupler3D() {
           <ambientLight intensity={0.5} />
           <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={2} castShadow />
           
+          {/* FIXED: snap is now strictly a boolean to satisfy TypeScript */}
           <PresentationControls 
             global 
             config={{ mass: 2, tension: 500 }} 
-            snap={{ mass: 4, tension: 1500 }} 
+            snap={true} 
             rotation={[0, 0.3, 0]} 
             polar={[-Math.PI / 3, Math.PI / 3]} 
             azimuth={[-Math.PI / 1.4, Math.PI / 2]}
@@ -87,14 +76,10 @@ export default function Coupler3D() {
             </Float>
           </PresentationControls>
 
-          {/* Photorealistic Studio Lighting Environment */}
           <Environment preset="studio" />
-          
-          {/* Floor Shadow for Depth */}
           <ContactShadows position={[0, -2.5, 0]} opacity={0.7} scale={10} blur={2.5} far={4} color="#06b6d4" />
         </Canvas>
       </div>
-      {/* Bottom fade to blend with funnel */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050811]/60 to-[#050811]"></div>
     </div>
   );
