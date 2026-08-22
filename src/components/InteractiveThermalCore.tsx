@@ -1,118 +1,85 @@
 ﻿// @ts-nocheck
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
-function WireframeCoolingArray() {
-  const groupRef = useRef<THREE.Group>(null);
-  const fan1Ref = useRef<THREE.Mesh>(null);
-  const fan2Ref = useRef<THREE.Mesh>(null);
+function WireframeMatrix() {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const ringRef = useRef<THREE.Group>(null);
   
-  // Track scroll target and current position for smooth interpolation (Lerp)
-  const scrollTarget = useRef(0);
-  const currentScroll = useRef(0);
+  const scrollProgress = useRef(0);
 
   useEffect(() => {
     const handleScroll = () => {
-      // Normalize scroll over a massive 4000px height for deep scrolling
-      scrollTarget.current = window.scrollY / 4000; 
+      // Track scroll progress across a deep 5000px timeline
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      scrollProgress.current = window.scrollY / (totalHeight || 1);
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useFrame((state, delta) => {
-    if (!groupRef.current) return;
+    if (!meshRef.current || !ringRef.current) return;
 
-    // Smoothly ease the current scroll value towards the target scroll value
-    currentScroll.current = THREE.MathUtils.lerp(currentScroll.current, scrollTarget.current, 0.05);
-    const t = currentScroll.current;
+    const t = scrollProgress.current;
 
-    // 1. SCROLL-LOCKED ROTATION: The entire array flips and spins based purely on scroll depth
-    groupRef.current.rotation.x = t * Math.PI * 4; 
-    groupRef.current.rotation.y = t * Math.PI * 2;
-    
-    // 2. SCROLL-LOCKED EXPLOSION: The components separate as you scroll deeper
-    if (fan1Ref.current && fan2Ref.current) {
-      fan1Ref.current.position.x = -1.5 - (t * 3);
-      fan2Ref.current.position.x = 1.5 + (t * 3);
-      
-      // Fans spin constantly, but spin FASTER when scrolling
-      const baseSpin = state.clock.elapsedTime * 2;
-      const scrollSpin = t * 50;
-      fan1Ref.current.rotation.z = baseSpin + scrollSpin;
-      fan2Ref.current.rotation.z = -(baseSpin + scrollSpin);
-    }
+    // Smooth continuous rotation blended with scroll momentum
+    meshRef.current.rotation.x = state.clock.elapsedTime * 0.2 + (t * Math.PI * 3);
+    meshRef.current.rotation.y = state.clock.elapsedTime * 0.3 + (t * Math.PI * 4);
+
+    // Expand or contract geometry based on scroll depth
+    const targetScale = 1.2 + (t * 1.5);
+    meshRef.current.scale.set(targetScale, targetScale, targetScale);
+
+    ringRef.current.rotation.z -= delta * 0.4;
+    ringRef.current.rotation.y += delta * 0.2;
   });
 
-  // 8bit.ai style glowing wireframe materials
-  const wireframeMaterial = new THREE.LineBasicMaterial({ 
-    color: 0x06b6d4, // Cyan glow
-    transparent: true, 
-    opacity: 0.6 
+  const neonWireframe = new THREE.MeshBasicMaterial({
+    color: 0x06b6d4,
+    wireframe: true,
+    transparent: true,
+    opacity: 0.35,
   });
-  
-  const coreMaterial = new THREE.LineBasicMaterial({ 
-    color: 0xffffff, // White core
-    transparent: true, 
-    opacity: 0.8 
+
+  const outerRingMat = new THREE.MeshBasicMaterial({
+    color: 0x3b82f6,
+    wireframe: true,
+    transparent: true,
+    opacity: 0.15,
   });
 
   return (
-    <group ref={groupRef} scale={1.5}>
-      {/* Central Heatsink Block */}
-      <lineSegments>
-        <edgesGeometry args={[new THREE.BoxGeometry(2, 2, 2, 4, 4, 4)]} />
-        <primitive object={coreMaterial} attach="material" />
-      </lineSegments>
-
-      {/* Left Cooling Fan Array */}
-      <mesh ref={fan1Ref} position={[-1.5, 0, 0]}>
-        <lineSegments>
-          <edgesGeometry args={[new THREE.CylinderGeometry(1.2, 1.2, 0.4, 32, 1)]} />
-          <primitive object={wireframeMaterial} attach="material" />
-        </lineSegments>
-        <lineSegments rotation={[Math.PI / 2, 0, 0]}>
-           <edgesGeometry args={[new THREE.TorusGeometry(0.8, 0.2, 8, 24)]} />
-           <primitive object={wireframeMaterial} attach="material" />
-        </lineSegments>
+    <group>
+      {/* Central 8bit.ai style Torus Knot / Complex Matrix */}
+      <mesh ref={meshRef} material={neonWireframe}>
+        <torusKnotGeometry args={[1.8, 0.6, 128, 32, 2, 3]} />
       </mesh>
 
-      {/* Right Cooling Fan Array */}
-      <mesh ref={fan2Ref} position={[1.5, 0, 0]}>
-        <lineSegments>
-          <edgesGeometry args={[new THREE.CylinderGeometry(1.2, 1.2, 0.4, 32, 1)]} />
-          <primitive object={wireframeMaterial} attach="material" />
-        </lineSegments>
-        <lineSegments rotation={[Math.PI / 2, 0, 0]}>
-           <edgesGeometry args={[new THREE.TorusGeometry(0.8, 0.2, 8, 24)]} />
-           <primitive object={wireframeMaterial} attach="material" />
-        </lineSegments>
-      </mesh>
-      
-      {/* Surrounding Data Rings */}
-      <lineSegments rotation={[Math.PI/2, 0, 0]}>
-        <edgesGeometry args={[new THREE.TorusGeometry(4, 0.01, 4, 64)]} />
-        <primitive object={new THREE.LineBasicMaterial({ color: 0x1e3a8a, transparent: true, opacity: 0.4 })} attach="material" />
-      </lineSegments>
+      {/* Surrounding Dynamic Wireframe Rings */}
+      <group ref={ringRef}>
+        <mesh material={outerRingMat} rotation={[Math.PI / 4, 0, 0]}>
+          <torusGeometry args={[3.8, 0.05, 16, 64]} />
+        </mesh>
+        <mesh material={outerRingMat} rotation={[0, Math.PI / 3, Math.PI / 6]}>
+          <torusGeometry args={[4.5, 0.05, 16, 64]} />
+        </mesh>
+      </group>
     </group>
   );
 }
 
 export default function InteractiveThermalCore() {
   return (
-    <div className="fixed inset-0 z-0 pointer-events-none bg-[#050505]">
-      {/* Massive background gradient to simulate depth */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-900/10 via-[#050505] to-[#050505] opacity-50" />
-      
-      <Canvas camera={{ position: [0, 0, 8], fov: 45 }} dpr={[1, 1.5]} gl={{ powerPreference: "high-performance", antialias: false }}>
-        <WireframeCoolingArray />
+    <div className="fixed inset-0 z-0 pointer-events-none bg-[#03050a]">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-950/20 via-[#03050a] to-[#03050a]" />
+      <Canvas camera={{ position: [0, 0, 7], fov: 50 }} dpr={[1, 1.5]} gl={{ powerPreference: "high-performance", antialias: false }}>
+        <WireframeMatrix />
       </Canvas>
-      
-      {/* Vignette overlay for cinematic darkness around edges */}
-      <div className="absolute inset-0 shadow-[inset_0_0_150px_rgba(0,0,0,0.9)]" />
+      <div className="absolute inset-0 shadow-[inset_0_0_120px_rgba(0,0,0,0.85)]" />
     </div>
   );
 }
