@@ -8,7 +8,7 @@ import { ShieldCheck, Clock, Globe2, ArrowRight, Timer, Cpu, Activity, Minimize2
 // Dynamically import the photorealistic 3D Coupler
 const Coupler3D = dynamic(() => import("@/components/Coupler3D"), { ssr: false });
 
-// Urgency Timer - Placed at the bottom of the funnel near CTA
+// Urgency Timer
 function UrgencyTimer() {
   const [timeLeft, setTimeLeft] = useState(24 * 3600 - 1500);
   useEffect(() => {
@@ -40,8 +40,17 @@ function UrgencyTimer() {
   );
 }
 
-// Hover-Expandable Interactive Data Card
-function InteractiveDataCard({ icon: Icon, title, metric, hiddenData, delay }) {
+// FIXED: TypeScript Interface for the Interactive Data Card Props
+interface InteractiveDataCardProps {
+  icon: React.ElementType;
+  title: string;
+  metric: string;
+  hiddenData: React.ReactNode;
+  delay: number;
+}
+
+// Hover-Expandable Interactive Data Card with explicit types
+function InteractiveDataCard({ icon: Icon, title, metric, hiddenData, delay }: InteractiveDataCardProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -54,7 +63,6 @@ function InteractiveDataCard({ icon: Icon, title, metric, hiddenData, delay }) {
       onMouseLeave={() => setIsHovered(false)}
       className="relative p-6 rounded-2xl bg-slate-900/40 border border-slate-800 hover:border-cyan-500/50 transition-all cursor-pointer overflow-hidden flex flex-col justify-center h-full group"
     >
-      {/* Background glow on hover */}
       <div className="absolute inset-0 bg-gradient-to-br from-cyan-900/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       
       <div className="relative z-10 flex flex-col items-center text-center">
@@ -62,7 +70,6 @@ function InteractiveDataCard({ icon: Icon, title, metric, hiddenData, delay }) {
         <h3 className="text-3xl font-black font-mono text-white mb-1">{metric}</h3>
         <p className="text-sm font-bold text-slate-400 uppercase tracking-wider">{title}</p>
         
-        {/* Expanded Content Section */}
         <AnimatePresence>
           {isHovered && (
             <motion.div 
@@ -84,9 +91,7 @@ export default function SyntrelHomePage() {
   return (
     <main className="min-h-screen bg-[#050811] text-slate-100 font-sans selection:bg-cyan-500 selection:text-black overflow-x-hidden">
       
-      {/* SECTION 1: HERO (Restored Design + Photorealistic Coupler) */}
       <section className="relative w-full min-h-[90vh] flex flex-col justify-center items-center pt-24 pb-20 px-4">
-        {/* Seamless 3D Integration */}
         <Coupler3D />
 
         <div className="relative z-10 max-w-5xl mx-auto text-center space-y-6">
@@ -117,7 +122,6 @@ export default function SyntrelHomePage() {
         </div>
       </section>
 
-      {/* SECTION 2: INTERACTIVE DATA (Educational CRO) */}
       <section className="relative z-20 py-24 px-4 sm:px-8 max-w-7xl mx-auto">
         <div className="text-center mb-16 space-y-3">
           <h2 className="text-3xl md:text-4xl font-bold text-white">Engineered For Mission-Critical Loads</h2>
@@ -167,7 +171,6 @@ export default function SyntrelHomePage() {
         </div>
       </section>
 
-      {/* SECTION 3: THE ALTERNATIVE (LOGICAL JUSTIFICATION) */}
       <section className="relative z-20 py-24 px-4 sm:px-8 bg-slate-900/20 border-y border-slate-800">
         <div className="max-w-5xl mx-auto">
           <motion.div 
@@ -212,13 +215,11 @@ export default function SyntrelHomePage() {
         </div>
       </section>
 
-      {/* SECTION 4: THE URGENCY / RFQ CLOSE (FUNNEL BOTTOM) */}
       <section id="rfq" className="relative z-20 py-24 px-4 sm:px-8 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-950/30 via-[#050811] to-[#050811]">
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}
           className="max-w-4xl mx-auto rounded-3xl border border-cyan-900/50 bg-[#070b14] overflow-hidden shadow-[0_0_80px_rgba(6,182,212,0.07)]"
         >
-          {/* Top Urgency Header */}
           <div className="w-full bg-red-950/20 border-b border-red-900/30 py-6 text-center">
             <h3 className="text-red-400 font-bold tracking-widest text-sm uppercase mb-2">Q3 Manufacturing Allocation Closing</h3>
             <UrgencyTimer />
@@ -249,7 +250,6 @@ export default function SyntrelHomePage() {
         </motion.div>
       </section>
 
-      {/* FOOTER */}
       <footer className="border-t border-slate-900 bg-[#020306] py-10 text-center text-xs text-slate-600 font-mono">
         © 2026 SYNTREL GLOBAL • B2B PRECISION CONTRACT SOURCING PLATFORM • ALL RIGHTS RESERVED
       </footer>
